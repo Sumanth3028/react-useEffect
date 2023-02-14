@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useReducer,useContext } from 'react';
+import React, { useState,useEffect,useReducer,useContext,useRef } from 'react';
 
 import Card from '../UI/Card/Card';
 import classes from './Login.module.css';
@@ -60,6 +60,11 @@ const Login = (props) => {
 
   const authCtx=useContext(AuthContext)
 
+  const emailInputRef=useRef();
+  const passwordInputRef=useRef();
+  const collegeInputRef=useRef();
+
+
   useEffect(()=>{
     const identifier=setTimeout(()=>{
       console.log('checking validity')
@@ -115,13 +120,28 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    authCtx.onLogin(emailState.value, passwordState.value,collegeState.value);
+    if(formIsValid)
+    {
+      authCtx.onLogin(emailState.value, passwordState.value,collegeState.value);
+    }
+    else if(!emailIsValid)
+    {
+          emailInputRef.current.focus()
+    }
+    else if(!passwordIsValid){
+          passwordInputRef.current.focus();
+    }
+    else{
+           collegeInputRef.current.focus();
+    } 
+    
   };
 
   return (
     <Card className={classes.login}>
       <form onSubmit={submitHandler}>
       <Input
+          ref={emailInputRef}
           id="email"
           label="E-mail"
           isValid={emailIsValid}
@@ -130,6 +150,7 @@ const Login = (props) => {
           value={emailState.value}
         />
         <Input
+          ref={passwordInputRef}
           id="password"
           label="Password"
           isValid={passwordIsValid}
@@ -138,6 +159,7 @@ const Login = (props) => {
           value={passwordState.value}
         />
         <Input
+          ref={collegeInputRef}
           id="college"
           label="College Name"
           isValid={collegeIsValid}
@@ -146,7 +168,7 @@ const Login = (props) => {
           value={collegeState.value}
         />
         <div className={classes.actions}>
-          <Button type="submit" className={classes.btn} disabled={!formIsValid}>
+          <Button type="submit" className={classes.btn} >
             Login
           </Button>
         </div>
